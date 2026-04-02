@@ -44,6 +44,9 @@ if command -v pacman >/dev/null 2>&1; then
   sudo systemctl set-default graphical.target
   sudo systemctl enable lightdm.service
   sudo systemctl start lightdm.service
+
+  # Match package expectations (avoids recurring "directory permissions differ" on polkit upgrades).
+  sudo chmod 755 /usr/share/polkit-1/rules.d 2>/dev/null || true
 elif command -v apt-get >/dev/null 2>&1; then
   sudo apt-get update
   sudo apt-get install -y git curl
@@ -52,7 +55,9 @@ else
   exit 1
 fi
 
-# 3. Clone dotfiles and run install entrypoint (bypassed for now)
+# 3. Dotfiles (optional): keep user/shell/editor/app config in a separate repo; this repo only
+#    provisions the VM. Uncomment below, set DOTFILES_REPO at the top of this file, and pass
+#    the same from the Vagrantfile `env:` block so `vagrant provision` is reproducible.
 # if [[ -d /home/vagrant/.dotfiles/.git ]]; then
 #   git -C /home/vagrant/.dotfiles pull --ff-only
 # else
