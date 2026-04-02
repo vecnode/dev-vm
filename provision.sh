@@ -6,7 +6,10 @@ set -euo pipefail
 
 # 1. Ensure basic tools inside the VM
 if command -v pacman >/dev/null 2>&1; then
-  sudo pacman -Syu --noconfirm git curl
+  # Sync DB and install targets only — avoid `pacman -Syu` here. A full upgrade pulls in
+  # hundreds of packages and often needs new PGP keys from keyservers; that can fail in a
+  # headless VM ("key could not be looked up remotely") and is unnecessary for git/curl.
+  sudo pacman -Sy --noconfirm --needed git curl
 elif command -v apt-get >/dev/null 2>&1; then
   sudo apt-get update
   sudo apt-get install -y git curl
