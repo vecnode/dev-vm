@@ -16,11 +16,9 @@ Vagrant.configure("2") do |config|
     vb.name = "dev-arch"
   end
 
-  config.vm.provision "shell", path: "provision.sh"
-  # When re-enabling dotfiles in provision.sh, pass DOTFILES_REPO from the host:
-  # config.vm.provision "shell",
-  #   path: "provision.sh",
-  #   env: {
-  #     "DOTFILES_REPO" => ENV.fetch("DOTFILES_REPO", "https://github.com/YOURUSER/dotfiles.git"),
-  #   }
+  config.vm.provision "shell",
+    path: "provision.sh",
+    env: {
+      "DOTFILES_REPO" => ENV.fetch("DOTFILES_REPO", "https://github.com/vecnode/dotfiles.git"),
+    }
 end

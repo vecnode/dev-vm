@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Re-enable with Vagrantfile env when using dotfiles:
-# DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/YOURUSER/dotfiles.git}"
-
 # 1. Ensure basic tools inside the VM
 if command -v pacman >/dev/null 2>&1; then
   # Small bootstrap only (before keyring + full sync). Upgrade the TLS/curl chain together or
@@ -55,16 +52,15 @@ else
   exit 1
 fi
 
-# 3. Dotfiles (optional): keep user/shell/editor/app config in a separate repo; this repo only
-#    provisions the VM. Uncomment below, set DOTFILES_REPO at the top of this file, and pass
-#    the same from the Vagrantfile `env:` block so `vagrant provision` is reproducible.
-# if [[ -d /home/vagrant/.dotfiles/.git ]]; then
-#   git -C /home/vagrant/.dotfiles pull --ff-only
-# else
-#   rm -rf /home/vagrant/.dotfiles
-#   git clone "$DOTFILES_REPO" /home/vagrant/.dotfiles
-# fi
-#
-# chown -R vagrant:vagrant /home/vagrant/.dotfiles
-#
-# sudo -u vagrant bash -c 'cd /home/vagrant/.dotfiles && ./install'
+# 3. Dotfiles: clone https://github.com/vecnode/dotfiles (common + arch-linux) and run install.sh
+#    as vagrant. Override: DOTFILES_REPO=... vagrant provision
+DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/vecnode/dotfiles.git}"
+
+if [[ -d /home/vagrant/.dotfiles/.git ]]; then
+  sudo -u vagrant git -C /home/vagrant/.dotfiles pull --ff-only
+else
+  sudo rm -rf /home/vagrant/.dotfiles
+  sudo -u vagrant git clone "$DOTFILES_REPO" /home/vagrant/.dotfiles
+fi
+
+sudo -u vagrant bash -c 'cd /home/vagrant/.dotfiles && bash install.sh'
