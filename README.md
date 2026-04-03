@@ -1,15 +1,35 @@
 # dev-vm
 
-Vagrant project: bring up an Arch Linux VM.
+Vagrant multi-machine project: 
+- **Arch** (`generic/arch`)
+- **Ubuntu** (`ubuntu/jammy64`)  
 
-## Setup / reproduce
+Each with XFCE + LightDM and dotfiles.
+
+## Setup
+
+Install virtualbox
 
 ```sh
 git clone https://github.com/vecnode/dev-vm.git
 cd dev-vm
 
-vagrant up
-vagrant destroy -f
+# spin up
+vagrant up arch
+vagrant up ubuntu
+
+# ssh
+vagrant ssh arch
+vagrant ssh ubuntu
+
+# destroy
+vagrant destroy -f arch
+vagrant destroy -f ubuntu
 ```
 
+Override dotfiles URL:
+
+```sh
+DOTFILES_REPO=https://github.com/you/dotfiles.git vagrant up arch
+```
 

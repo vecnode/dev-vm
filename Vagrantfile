@@ -1,24 +1,35 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+# Multi-machine: `vagrant up arch`, `vagrant up ubuntu`, or `vagrant up` for both.
+# Dotfiles run as a second provisioner (uploaded by Vagrant) — do not rely on /vagrant mount.
+
 Vagrant.configure("2") do |config|
-  # Official archlinux/archlinux has no active releases on Vagrant Cloud (all revoked);
-  # generic/arch ships VirtualBox (and other providers) and is still Arch-based.
-  config.vm.box = "generic/arch"
+  _dotfiles = {
+    "DOTFILES_REPO" => ENV.fetch("DOTFILES_REPO", "https://github.com/vecnode/dotfiles.git"),
+  }
 
-  config.vm.hostname = "dev-arch"
-  config.vm.network "private_network", ip: "192.168.56.10"
-
-  # VirtualBox: show the VM window on `vagrant up` (LightDM/XFCE after provision; TTY before).
-  # Set vb.gui = false for headless; or open the window from VirtualBox Manager → Show.
-  config.vm.provider "virtualbox" do |vb|
-    vb.gui = true
-    vb.name = "dev-arch"
+  config.vm.define "arch", primary: true do |arch|
+    arch.vm.box = "generic/arch"
+    arch.vm.hostname = "dev-arch"
+    arch.vm.network "private_network", ip: "192.168.56.10"
+    arch.vm.provision "shell", path: "arch-linux/provision.sh", env: _dotfiles
+    arch.vm.provision "shell", path: "shared/dotfiles.sh", env: _dotfiles
+    arch.vm.provider "virtualbox" do |vb|
+      vb.gui = true
+      vb.name = "dev-arch"
+    end
   end
 
-  config.vm.provision "shell",
-    path: "provision.sh",
-    env: {
-      "DOTFILES_REPO" => ENV.fetch("DOTFILES_REPO", "https://github.com/vecnode/dotfiles.git"),
-    }
+  config.vm.define "ubuntu" do |ubuntu|
+    ubuntu.vm.box = "ubuntu/jammy64"
+    ubuntu.vm.hostname = "dev-ubuntu"
+    ubuntu.vm.network "private_network", ip: "192.168.56.11"
+    ubuntu.vm.provision "shell", path: "ubuntu-linux/provision.sh", env: _dotfiles
+    ubuntu.vm.provision "shell", path: "shared/dotfiles.sh", env: _dotfiles
+    ubuntu.vm.provider "virtualbox" do |vb|
+      vb.gui = true
+      vb.name = "dev-ubuntu"
+    end
+  end
 end
