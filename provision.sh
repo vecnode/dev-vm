@@ -63,4 +63,5 @@ else
   sudo -u vagrant git clone "$DOTFILES_REPO" /home/vagrant/.dotfiles
 fi
 
-sudo -u vagrant bash -c 'cd /home/vagrant/.dotfiles && bash install.sh'
+# install.sh defaults to ~/dotfiles (no dot); this repo clones to ~/.dotfiles — set REPO_DIR.
+sudo -u vagrant bash -c 'export REPO_DIR=/home/vagrant/.dotfiles; cd "$REPO_DIR" && bash install.sh'
