@@ -14,6 +14,7 @@ Vagrant.configure("2") do |config|
     arch.vm.hostname = "dev-arch"
     arch.vm.network "private_network", ip: "192.168.56.10"
     arch.vm.provision "shell", path: "arch-linux/provision.sh", env: _dotfiles
+    arch.vm.provision "shell", path: "shared/mask-vboxclient-autostart.sh"
     arch.vm.provision "shell", path: "shared/dotfiles.sh", env: _dotfiles
     arch.vm.provider "virtualbox" do |vb|
       vb.gui = true
@@ -26,6 +27,7 @@ Vagrant.configure("2") do |config|
     ubuntu.vm.hostname = "dev-ubuntu"
     ubuntu.vm.network "private_network", ip: "192.168.56.11"
     ubuntu.vm.provision "shell", path: "ubuntu-linux/provision.sh", env: _dotfiles
+    ubuntu.vm.provision "shell", path: "shared/mask-vboxclient-autostart.sh"
     ubuntu.vm.provision "shell", path: "shared/dotfiles.sh", env: _dotfiles
     ubuntu.vm.provider "virtualbox" do |vb|
       vb.gui = true
